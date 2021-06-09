@@ -1,8 +1,12 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/ohthehugemanatee/zoom-splitter/tools"
@@ -11,10 +15,22 @@ import (
 func TestRootHandler(t *testing.T) {
 	t.Run("Test error response from push URL", func(t *testing.T) {
 		logBuffer := tools.CreateAndActivateEmptyTestLogBuffer()
+		logBuffer.ExpectLog("Server started, listening on :80")
 		logBuffer.ExpectLog("Received HTTP request to /")
+		logBuffer.ExpectLog("Request received without a filename. Doing nothing.")
 		responseRecorder := runDummyRequest(t, "GET", "/", RootHandler)
 		logBuffer.TestLogValues(t)
-		AssertStatus(t, http.StatusNotImplemented, responseRecorder.Code)
+		AssertStatus(t, http.StatusBadRequest, responseRecorder.Code)
+	})
+	t.Run("Test read file from URL query", func(t *testing.T) {
+		filename := TempFileName("test_", "_readFile")
+		logBuffer := tools.CreateAndActivateEmptyTestLogBuffer()
+		logBuffer.ExpectLog("Server started, listening on :80")
+		logBuffer.ExpectLog("Received HTTP request to /")
+		logBuffer.ExpectLog("File request received: " + filename)
+		responseRecorder := runDummyRequest(t, "GET", "/?file="+filename, RootHandler)
+		logBuffer.TestLogValues(t)
+		AssertStatus(t, http.StatusOK, responseRecorder.Code)
 	})
 }
 
@@ -36,4 +52,11 @@ func AssertStatus(t *testing.T, expected int, got int) {
 		t.Errorf("Got wrong status code: got %v want %v",
 			got, expected)
 	}
+}
+
+// TempFileName generates a temporary file name.
+func TempFileName(prefix, suffix string) string {
+	randBytes := make([]byte, 16)
+	rand.Read(randBytes)
+	return filepath.Join(os.TempDir(), prefix+hex.EncodeToString(randBytes)+suffix)
 }
