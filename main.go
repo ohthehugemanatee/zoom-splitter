@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/ohthehugemanatee/zoom-splitter/logMessage"
 	"log"
 	"net/http"
 )
@@ -18,18 +17,18 @@ func main() {
 
 func registerHTTPHandlers() {
 	http.HandleFunc("/", RootHandler)
-	log.Print(logMessage.ServerReady)
+	log.Print(LogServerReady)
 }
 
 // RootHandler handles HTTP requests to /
 func RootHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print(logMessage.RequestReceived)
+	log.Print(LogRequestReceived)
 	fileName := r.URL.Query().Get("file")
 	if fileName != "" {
-		log.Print(logMessage.FileRequestReceived + fileName)
+		log.Print(LogFileRequestReceived + fileName)
 		w.WriteHeader(http.StatusOK)
 		return
 	}
-	log.Print("Request received without a filename. Doing nothing.")
+	log.Print(LogNoFileName)
 	w.WriteHeader(http.StatusBadRequest)
 }

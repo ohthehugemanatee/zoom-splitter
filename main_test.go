@@ -9,15 +9,14 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ohthehugemanatee/zoom-splitter/logMessage"
 	"github.com/ohthehugemanatee/zoom-splitter/tools"
 )
 
 func TestRootHandler(t *testing.T) {
 	t.Run("Test error response from push URL", func(t *testing.T) {
 		logBuffer := tools.CreateAndActivateEmptyTestLogBuffer()
-		logBuffer.ExpectLog(logMessage.ServerReady)
-		logBuffer.ExpectLog(logMessage.RequestReceived)
+		logBuffer.ExpectLog(LogServerReady)
+		logBuffer.ExpectLog(LogRequestReceived)
 		logBuffer.ExpectLog("Request received without a filename. Doing nothing.")
 		responseRecorder := runDummyRequest(t, "GET", "/", RootHandler)
 		logBuffer.TestLogValues(t)
@@ -26,9 +25,9 @@ func TestRootHandler(t *testing.T) {
 	t.Run("Test read file from URL query", func(t *testing.T) {
 		filename := TempFileName("test_", "_readFile")
 		logBuffer := tools.CreateAndActivateEmptyTestLogBuffer()
-		logBuffer.ExpectLog(logMessage.ServerReady)
-		logBuffer.ExpectLog(logMessage.RequestReceived)
-		logBuffer.ExpectLog(logMessage.FileRequestReceived + filename)
+		logBuffer.ExpectLog(LogServerReady)
+		logBuffer.ExpectLog(LogRequestReceived)
+		logBuffer.ExpectLog(LogFileRequestReceived + filename)
 		responseRecorder := runDummyRequest(t, "GET", "/?file="+filename, RootHandler)
 		logBuffer.TestLogValues(t)
 		AssertStatus(t, http.StatusOK, responseRecorder.Code)
