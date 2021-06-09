@@ -24,5 +24,4 @@ func registerHTTPHandlers() {
 func RootHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("Received HTTP request to /")
 	w.WriteHeader(http.StatusNotImplemented)
-	return
 }
