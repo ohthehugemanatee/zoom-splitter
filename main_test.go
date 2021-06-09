@@ -11,8 +11,9 @@ import (
 func TestRootHandler(t *testing.T) {
 	t.Run("Test error response from push URL", func(t *testing.T) {
 		logBuffer := tools.CreateAndActivateEmptyTestLogBuffer()
-		logBuffer.ExpectLog("Server started, listening on :80")
+		logBuffer.ExpectLog("Received HTTP request to /")
 		responseRecorder := runDummyRequest(t, "GET", "/", RootHandler)
+		logBuffer.TestLogValues(t)
 		AssertStatus(t, http.StatusNotImplemented, responseRecorder.Code)
 	})
 }
