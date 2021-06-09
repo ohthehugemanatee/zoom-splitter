@@ -4,10 +4,14 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/ohthehugemanatee/zoom-splitter/tools"
 )
 
 func TestRootHandler(t *testing.T) {
 	t.Run("Test error response from push URL", func(t *testing.T) {
+		logBuffer := tools.CreateAndActivateEmptyTestLogBuffer()
+		logBuffer.ExpectLog("[Server started, listening on :80]")
 		responseRecorder := runDummyRequest(t, "GET", "/", RootHandler)
 		AssertStatus(t, http.StatusNotImplemented, responseRecorder.Code)
 	})
