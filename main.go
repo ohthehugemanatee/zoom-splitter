@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/ohthehugemanatee/zoom-splitter/logMessage"
 	"log"
 	"net/http"
 )
@@ -17,15 +18,15 @@ func main() {
 
 func registerHTTPHandlers() {
 	http.HandleFunc("/", RootHandler)
-	log.Print("Server started, listening on " + networkAddress)
+	log.Print(logMessage.ServerReady)
 }
 
 // RootHandler handles HTTP requests to /
 func RootHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print("Received HTTP request to /")
+	log.Print(logMessage.RequestReceived)
 	fileName := r.URL.Query().Get("file")
 	if fileName != "" {
-		log.Print("File request received: " + fileName)
+		log.Print(logMessage.FileRequestReceived + fileName)
 		w.WriteHeader(http.StatusOK)
 		return
 	}
