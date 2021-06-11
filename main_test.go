@@ -3,6 +3,8 @@ package main
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -17,7 +19,7 @@ func TestRootHandler(t *testing.T) {
 		logBuffer := tools.CreateAndActivateEmptyTestLogBuffer()
 		logBuffer.ExpectLog(LogServerReady)
 		logBuffer.ExpectLog(LogRequestReceived)
-		logBuffer.ExpectLog("Request received without a filename. Doing nothing.")
+		logBuffer.ExpectLog(LogNoFileName)
 		responseRecorder := runDummyRequest(t, "GET", "/", RootHandler)
 		logBuffer.TestLogValues(t)
 		AssertStatus(t, http.StatusBadRequest, responseRecorder.Code)
@@ -32,6 +34,20 @@ func TestRootHandler(t *testing.T) {
 		logBuffer.TestLogValues(t)
 		// Without a real file it should return 404.
 		AssertStatus(t, http.StatusNotFound, responseRecorder.Code)
+	})
+	t.Run("Test sending a file to ffmpeg", func(t *testing.T) {
+		tmpFile, err := ioutil.TempFile(os.TempDir(), "zoomsplitter-test-")
+		if err != nil {
+			log.Fatal("Can't create temporary file", err)
+		}
+		logBuffer := tools.CreateAndActivateEmptyTestLogBuffer()
+		logBuffer.ExpectLog(LogServerReady)
+		logBuffer.ExpectLog(LogRequestReceived)
+		logBuffer.ExpectLog(LogFileRequestReceived + tmpFile.Name())
+		logBuffer.ExpectLog(LogFoundFile + tmpFile.Name())
+		responseRecorder := runDummyRequest(t, "GET", "/?file="+tmpFile.Name(), RootHandler)
+		logBuffer.TestLogValues(t)
+		AssertStatus(t, http.StatusOK, responseRecorder.Code)
 	})
 }
 

@@ -5,4 +5,5 @@ const (
 	LogRequestReceived     string = "Received HTTP request to /"
 	LogFileRequestReceived string = "File request received: "
 	LogNoFileName          string = "Request received without a filename. Doing nothing."
+	LogFoundFile           string = "Found file: "
 )

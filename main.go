@@ -27,9 +27,11 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 	fileName := r.URL.Query().Get("file")
 	if fileName != "" {
 		log.Print(LogFileRequestReceived + fileName)
-		fileInfo, err := os.Stat("/" + fileName)
+		_, err := os.Stat("/" + fileName)
 		if err == nil {
-			log.Print("Found file " + fileInfo.Name())
+			log.Print(LogFoundFile + fileName)
+			w.WriteHeader(http.StatusOK)
+			return
 		}
 		w.WriteHeader(http.StatusNotFound)
 		return
