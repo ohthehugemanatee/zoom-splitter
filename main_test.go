@@ -22,7 +22,7 @@ func TestRootHandler(t *testing.T) {
 		logBuffer.TestLogValues(t)
 		AssertStatus(t, http.StatusBadRequest, responseRecorder.Code)
 	})
-	t.Run("Test read file from URL query", func(t *testing.T) {
+	t.Run("Test read file name value from URL query", func(t *testing.T) {
 		filename := TempFileName("test_", "_readFile")
 		logBuffer := tools.CreateAndActivateEmptyTestLogBuffer()
 		logBuffer.ExpectLog(LogServerReady)
