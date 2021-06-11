@@ -30,7 +30,8 @@ func TestRootHandler(t *testing.T) {
 		logBuffer.ExpectLog(LogFileRequestReceived + filename)
 		responseRecorder := runDummyRequest(t, "GET", "/?file="+filename, RootHandler)
 		logBuffer.TestLogValues(t)
-		AssertStatus(t, http.StatusOK, responseRecorder.Code)
+		// Without a real file it should return 404.
+		AssertStatus(t, http.StatusNotFound, responseRecorder.Code)
 	})
 }
 

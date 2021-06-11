@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 )
 
 const networkAddress string = ":80"
@@ -26,7 +27,11 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 	fileName := r.URL.Query().Get("file")
 	if fileName != "" {
 		log.Print(LogFileRequestReceived + fileName)
-		w.WriteHeader(http.StatusOK)
+		fileInfo, err := os.Stat("/" + fileName)
+		if err == nil {
+			log.Print("Found file " + fileInfo.Name())
+		}
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 	log.Print(LogNoFileName)
